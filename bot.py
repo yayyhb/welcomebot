@@ -84,12 +84,12 @@ def check(update, context, override_lock=None):
 
     locked = override_lock if override_lock is not None else db.get(chat_str + "_lck")
 
-    if locked and db.get(chat_str + "_adm") != update.message.from_user.id:
+    if locked and update.message.from_user.id not in BOT_ADMIN_USER_IDS:
         if not db.get(chat_str + "_quiet"):
             send_async(
                 context,
                 chat_id=chat_id,
-                text="Sorry, only the person who invited me can do that.",
+                text="Sorry, only a admin can do that.",
             )
         return False
 
