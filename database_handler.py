@@ -15,7 +15,7 @@ def verlosung_add (group_id, user_id, username, firstname, text_msg):
     if not user_exists and not joy_exists:
         sql = "INSERT INTO verlosung (group_id, user_id, user_name, joy_name) VALUES (?, ?, ?, ?)"
         cur.execute(sql, (group_id, user_id, username, text_msg))
-        message = firstname + ", dein Joy Name '" + text_msg[:4] + "****' wurde unter dem Telegramm Benutzer '@" + username[:4] + "*****' für die Verlosung gespeichert. Viel Glück!"
+        message = firstname + ", dein Joy Name '" + text_msg[:2] + "****' wurde unter dem Telegramm Benutzer '@" + username[:2] + "*****' für die Verlosung gespeichert. Viel Glück!"
         con.commit()
         con.close()
 
