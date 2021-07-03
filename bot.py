@@ -90,7 +90,7 @@ def verlosung(update, context):
     text_msg = text_msg.split(" ",1)[1]
 
     #delete user message for security reasons. Needs admin rights then
-    # context.bot.delete_message(group_id, msg_id)
+    context.bot.delete_message(group_id, msg_id)
     
     message = abbdb.verlosung_add(group_id, user_id, user_name, first_name, text_msg)
     context.bot.send_message(group_id, message)
