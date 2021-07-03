@@ -16,9 +16,8 @@ from config import BOTNAME, TOKEN, BOT_ADMIN_USER_IDS
 #new code Ralf
 import sqlite3
 from mwt import MWT
-import database_handler as db
+import database_handler as abbdb
 #end imports
-
 
 ALLOWED_USERS_FILTER = Filters.user(user_id=BOT_ADMIN_USER_IDS)
 
@@ -89,7 +88,11 @@ def verlosung(update, context):
     first_name = update.message.from_user.first_name
     text_msg = update.message.text
     text_msg = text_msg.split(" ",1)[1]
-    message = db.verlosung_add(group_id, user_id, user_name, first_name, text_msg)
+
+    #delete user message for security reasons. Needs admin rights then
+    # context.bot.delete_message(group_id, msg_id)
+    
+    message = abbdb.verlosung_add(group_id, user_id, user_name, first_name, text_msg)
     context.bot.send_message(group_id, message)
 
 def getWinner(update, context):
@@ -97,7 +100,7 @@ def getWinner(update, context):
 
     if update.effective_user.id in get_admin_ids(context.bot, update.message.chat_id):
         #code here
-        message = db.verlosung_getWinner(chat_id)
+        message = abbdb.verlosung_getWinner(chat_id)
         context.bot.send_message(chat_id, message)
                 
     else:
@@ -108,7 +111,7 @@ def verlosungPurge(update, context):
 
     if update.effective_user.id in get_admin_ids(context.bot, update.message.chat_id):
         #code here
-        message = db.verlosung_purge(chat_id)
+        message = abbdb.verlosung_purge(chat_id)
         context.bot.send_message(chat_id, message)
                 
     else:
