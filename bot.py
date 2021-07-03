@@ -13,6 +13,13 @@ from telegram.ext.dispatcher import run_async
 
 from config import BOTNAME, TOKEN, BOT_ADMIN_USER_IDS
 
+#new code Ralf
+import sqlite3
+from mwt import MWT
+import database_handler as db
+#end imports
+
+
 ALLOWED_USERS_FILTER = Filters.user(user_id=BOT_ADMIN_USER_IDS)
 
 help_text = (
@@ -66,6 +73,48 @@ logger = logging.getLogger(__name__)
 def send_async(context, *args, **kwargs):
     context.bot.send_message(*args, **kwargs)
 
+#new code Ralf
+@MWT(timeout=60*60)
+def get_admin_ids(bot, chat_id):
+    """Returns a list of admin IDs for a given chat. Results are cached for 1 hour."""
+    return [admin.user.id for admin in bot.get_chat_administrators(chat_id)]
+#usage 
+#if update.effective_user.id in get_admin_ids(context.bot, update.message.chat_id):
+    # admin only
+
+def verlosung(update, context):
+    group_id = str(update.effective_chat.id)
+    user_id = str(update.message.from_user.id)
+    user_name = update.message.from_user.username
+    first_name = update.message.from_user.first_name
+    text_msg = update.message.text
+    text_msg = text_msg.split(" ",1)[1]
+    message = db.verlosung_add(group_id, user_id, user_name, first_name, text_msg)
+    context.bot.send_message(group_id, message)
+
+def getWinner(update, context):
+    chat_id=update.effective_chat.id
+
+    if update.effective_user.id in get_admin_ids(context.bot, update.message.chat_id):
+        #code here
+        message = db.verlosung_getWinner(chat_id)
+        context.bot.send_message(chat_id, message)
+                
+    else:
+        context.bot.send_message(chat_id, text="Das können nur Admins!")
+
+def verlosungPurge(update, context):
+    chat_id=update.effective_chat.id
+
+    if update.effective_user.id in get_admin_ids(context.bot, update.message.chat_id):
+        #code here
+        message = db.verlosung_purge(chat_id)
+        context.bot.send_message(chat_id, message)
+                
+    else:
+        context.bot.send_message(chat_id, text="Das können nur Admins!")
+
+#end def Ralf
 
 def check(update, context, override_lock=None):
     """
@@ -390,7 +439,7 @@ def main():
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
-
+   
     dp.add_handler(CommandHandler("start", help, ALLOWED_USERS_FILTER))
     dp.add_handler(CommandHandler("help", help, ALLOWED_USERS_FILTER))
     dp.add_handler(CommandHandler("welcome", set_welcome, ALLOWED_USERS_FILTER))
@@ -401,6 +450,15 @@ def main():
     dp.add_handler(CommandHandler("quiet", quiet, ALLOWED_USERS_FILTER))
     dp.add_handler(CommandHandler("unquiet", unquiet, ALLOWED_USERS_FILTER))
     dp.add_handler(CommandHandler("kick", kick, ALLOWED_USERS_FILTER))
+
+    #new handlers Ralf
+    verlosung_handler = CommandHandler('verlosung', verlosung)
+    getWinner_handler = CommandHandler('getWinner', getWinner)
+    verlosungPurge_handler = CommandHandler('verlosungPurge', verlosungPurge)
+    dp.add_handler(verlosung_handler)
+    dp.add_handler(getWinner_handler)
+    dp.add_handler(verlosungPurge_handler)
+    #end handlers Ralf
 
     dp.add_handler(MessageHandler(Filters.status_update, empty_message))
 
