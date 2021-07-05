@@ -4,11 +4,11 @@ def verlosung_add (group_id, user_id, username, firstname, text_msg):
     con = sqlite3.connect('abb.db')
     cur = con.cursor()
 
-    test_exists = "SELECT count(*) FROM verlosung WHERE user_id = '" + user_id + "'"
+    test_exists = "SELECT count(*) FROM verlosung WHERE user_id = '" + user_id + "' AND group_id = '" + group_id + "'"
     user_exists = cur.execute(test_exists)
     user_exists = cur.fetchone()[0]
 
-    test_exists = "SELECT count(*) FROM verlosung WHERE joy_name = '" + text_msg + "'"
+    test_exists = "SELECT count(*) FROM verlosung WHERE joy_name = '" + text_msg + "' AND group_id = '" + group_id + "'"
     joy_exists = cur.execute(test_exists)
     joy_exists = cur.fetchone()[0]
 
@@ -48,7 +48,8 @@ def verlosung_purge(chat_id):
     chat_id = str(chat_id)
     con = sqlite3.connect('abb.db')
     cur = con.cursor()
-
+    print("Teilnehmer gelöscht:")
+    print("Chat ID: " + chat_id)
     cur.execute("DELETE FROM verlosung WHERE group_id = '" + chat_id + "'")
     con.commit()
     con.close()

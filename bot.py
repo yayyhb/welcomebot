@@ -89,9 +89,16 @@ def verlosung(update, context):
     text_msg = update.message.text
     text_msg = text_msg.split(" ",1)[1]
 
+    print("Teilnehmer registriert:")
+    print("Gruppen ID: " + group_id)
+    print("Gruppenname: " + update.effective_chat.title)
+    print("User ID: " + user_id)
+    print("Username: @" + user_name)
+    print("Nachricht: " + text_msg)
+    
     #delete user message for security reasons. Needs admin rights then
     context.bot.delete_message(group_id, msg_id)
-    
+
     message = abbdb.verlosung_add(group_id, user_id, user_name, first_name, text_msg)
     context.bot.send_message(group_id, message)
 
