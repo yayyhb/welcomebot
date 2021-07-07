@@ -96,11 +96,11 @@ def verlosung(update, context):
     print("Username: @" + user_name)
     print("Nachricht: " + text_msg)
     
-    #delete user message for security reasons. Needs admin rights then
-    context.bot.delete_message(group_id, msg_id)
-
     message = abbdb.verlosung_add(group_id, user_id, user_name, first_name, text_msg)
     context.bot.send_message(group_id, message)
+
+    #delete user message for security reasons. Needs admin rights then
+    context.bot.delete_message(group_id, msg_id)
 
 def getWinner(update, context):
     chat_id=update.effective_chat.id
